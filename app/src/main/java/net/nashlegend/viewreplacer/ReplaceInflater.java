@@ -27,19 +27,7 @@ import static android.support.v7.appcompat.R.styleable;
 @SuppressWarnings("RestrictedApi")
 public class ReplaceInflater {
 
-	private static final Class<?>[] sConstructorSignature = new Class[] {
-		Context.class, AttributeSet.class
-	};
 	private static final int[] sOnClickAttrs = new int[] { android.R.attr.onClick };
-
-	private static final String[] sClassPrefixList = {
-		"android.widget.", "android.view.", "android.webkit."
-	};
-
-	private static final Map<String, Constructor<? extends View>> sConstructorMap =
-		new ArrayMap<>();
-
-	private final Object[] mConstructorArgs = new Object[2];
 
 	public final View createView(View parent, final String name, @NonNull Context context,
 		@NonNull AttributeSet attrs, boolean inheritContext, boolean readAndroidTheme) {
@@ -67,33 +55,6 @@ public class ReplaceInflater {
 		return view;
 	}
 
-	private View createViewFromTag(Context context, String name, AttributeSet attrs) {
-		if (name.equals("view")) {
-			name = attrs.getAttributeValue(null, "class");
-		}
-		try {
-			mConstructorArgs[0] = context;
-			mConstructorArgs[1] = attrs;
-			if (-1 == name.indexOf('.')) {
-				for (String classPrefix : sClassPrefixList) {
-					final View view = createView(context, name, classPrefix);
-					if (view != null) {
-						return view;
-					}
-				}
-				return null;
-			} else {
-				return createView(context, name, null);
-			}
-		} catch (Exception e) {
-			//创建View失败则直接交给下一下处理者
-			return null;
-		} finally {
-			mConstructorArgs[0] = null;
-			mConstructorArgs[1] = null;
-		}
-	}
-
 	/**
 	 * 如果有android:onClick，就给处理它的点击事件
 	 */
@@ -113,28 +74,6 @@ public class ReplaceInflater {
 			view.setOnClickListener(new DeclaredOnClickListener(view, handlerName));
 		}
 		a.recycle();
-	}
-
-	/**
-	 * 根据类名通过反射实例化View
-	 */
-	private View createView(Context context, String name, String prefix)
-		throws ClassNotFoundException, InflateException {
-		Constructor<? extends View> constructor = sConstructorMap.get(name);
-		try {
-			if (constructor == null) {
-				Class<? extends View> clazz = context.getClassLoader()
-					.loadClass(prefix != null ? (prefix + name) : name)
-					.asSubclass(View.class);
-				constructor = clazz.getConstructor(sConstructorSignature);
-				sConstructorMap.put(name, constructor);
-			}
-			constructor.setAccessible(true);
-			return constructor.newInstance(mConstructorArgs);
-		} catch (Exception e) {
-			//返回null，并由系统的Inflater处理它
-			return null;
-		}
 	}
 
 	/**
