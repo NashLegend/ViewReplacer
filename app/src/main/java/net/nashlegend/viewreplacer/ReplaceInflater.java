@@ -43,7 +43,6 @@ public class ReplaceInflater {
 
 	public final View createView(View parent, final String name, @NonNull Context context,
 		@NonNull AttributeSet attrs, boolean inheritContext, boolean readAndroidTheme) {
-		final Context originalContext = context;
 
 		//作用是在5.0以下，把带android:theme传给子控件
 		if (inheritContext && parent != null) {
@@ -58,11 +57,6 @@ public class ReplaceInflater {
 			case "TextView":
 				view = new TTextView(context, attrs);
 				break;
-		}
-
-		if (view == null && originalContext != context) {
-			// originalContext != context的话很有可能是用了android:theme了，得让它生效
-			view = createViewFromTag(context, name, attrs);
 		}
 
 		if (view != null) {
