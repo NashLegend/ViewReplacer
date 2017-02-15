@@ -121,7 +121,7 @@ public class ReplaceInflater {
 		@Override
 		public void onClick(@NonNull View v) {
 			if (mResolvedMethod == null) {
-				resolveMethod(mHostView.getContext(), mMethodName);
+				resolveMethod(mHostView.getContext());
 			}
 			try {
 				mResolvedMethod.invoke(mResolvedContext, v);
@@ -133,7 +133,7 @@ public class ReplaceInflater {
 			}
 		}
 
-		private void resolveMethod(@Nullable Context context, @NonNull String name) {
+		private void resolveMethod(@Nullable Context context) {
 			while (context != null) {
 				try {
 					if (!context.isRestricted()) {
