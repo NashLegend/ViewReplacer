@@ -17,7 +17,7 @@ public class TTextView extends android.support.v7.widget.AppCompatEditText {
 
 	public TTextView(Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
-		setTextColor(Color.parseColor("#ff0000"));
+		setTextColor(Color.parseColor("#fff000"));
 	}
 
 	public TTextView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {

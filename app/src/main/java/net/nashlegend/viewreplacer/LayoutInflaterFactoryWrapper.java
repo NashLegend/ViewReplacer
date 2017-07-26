@@ -2,9 +2,9 @@ package net.nashlegend.viewreplacer;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.v4.view.LayoutInflaterFactory;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewParent;
 import android.view.Window;
@@ -14,12 +14,12 @@ import android.view.Window;
  * @since 01-20-2017
  */
 
-public class LayoutInflaterFactoryWrapper implements LayoutInflaterFactory {
+public class LayoutInflaterFactoryWrapper implements LayoutInflater.Factory2 {
 	private ReplaceInflater mInflater = new ReplaceInflater();
-	private LayoutInflaterFactory originalFactory;
+	private LayoutInflater.Factory2 originalFactory;
 	private Window mWindow;
 
-	public LayoutInflaterFactoryWrapper(LayoutInflaterFactory originalFactory, Window window) {
+	public LayoutInflaterFactoryWrapper(LayoutInflater.Factory2 originalFactory, Window window) {
 		this.originalFactory = originalFactory;
 		mWindow = window;
 	}
@@ -33,6 +33,10 @@ public class LayoutInflaterFactoryWrapper implements LayoutInflaterFactory {
 		return view;
 	}
 
+	@Override
+	public View onCreateView(String name, Context context, AttributeSet attributeSet) {
+		return onCreateView(null, name, context, attributeSet);
+	}
 
 	private View replaceView(View parent, String name, Context context, AttributeSet attrs) {
 		final boolean isPre21 = Build.VERSION.SDK_INT < 21;
